@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: webreal-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false  # 需要在 Render Dashboard 手动设置
+      - key: JWT_SECRET
+        generateValue: true  # Render 会自动生成随机值
+      - key: FRONTEND_URL
+        sync: false  # 需要在部署后设置为 Vercel 的 URL
+    healthCheckPath: /api/health

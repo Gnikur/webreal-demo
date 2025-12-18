@@ -1,52 +1,57 @@
 <template>
   <div id="app">
     <!-- 顶部导航栏 -->
-    <el-header class="app-header">
-      <div class="header-logo">
-        <i class="el-icon-menu"></i>
-        <span>WebReal 图形化编程平台 Demo</span>
+    <div class="navbar" v-if="isAuthenticated">
+      <div class="navbar-left">
+        <h1 class="logo">WebReal 2.0</h1>
+        <span class="subtitle">图形化编程平台</span>
       </div>
-      <el-menu 
-        :default-active="activeMenu" 
-        mode="horizontal"
-        @select="handleMenuSelect"
-        background-color="#409EFF"
-        text-color="#fff"
-        active-text-color="#ffd04b"
-      >
-        <el-menu-item index="/workflow">
-          <i class="el-icon-s-data"></i>
-          <span>工作流编辑器</span>
-        </el-menu-item>
-      </el-menu>
-    </el-header>
+      <div class="navbar-right">
+        <span class="username">
+          <i class="el-icon-user"></i>
+          {{ username }}
+        </span>
+        <el-button 
+          type="text" 
+          @click="handleLogout"
+          style="color: white;"
+        >
+          <i class="el-icon-switch-button"></i>
+          退出登录
+        </el-button>
+      </div>
+    </div>
 
-    <!-- 主要内容区 -->
-    <router-view />
+    <!-- 主要内容区域 -->
+    <router-view/>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'App',
-  data() {
-    return {
-      activeMenu: '/workflow'
-    }
+  computed: {
+    ...mapGetters(['isAuthenticated', 'username'])
   },
-  watch: {
-    '$route.path': {
-      handler(path) {
-        this.activeMenu = path
-      },
-      immediate: true
-    }
+  created() {
+    // 初始化应用，恢复登录状态
+    this.$store.dispatch('initApp');
   },
   methods: {
-    handleMenuSelect(index) {
-      if (this.$route.path !== index) {
-        this.$router.push(index)
-      }
+    handleLogout() {
+      this.$confirm('确定要退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('logout');
+        this.$message.success('已退出登录');
+        this.$router.push('/login');
+      }).catch(() => {
+        // 取消退出
+      });
     }
   }
 }
@@ -68,39 +73,51 @@ export default {
   flex-direction: column;
 }
 
-/* 顶部导航栏样式 */
-.app-header {
-  height: 60px !important;
-  background: #409EFF;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
+.navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 18px;
-  font-weight: bold;
-  margin-right: 30px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.header-logo i {
-  margin-right: 10px;
+.navbar-left {
+  display: flex;
+  align-items: baseline;
+}
+
+.logo {
   font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  margin-right: 10px;
 }
 
-.el-menu--horizontal {
-  border-bottom: none !important;
+.subtitle {
+  font-size: 14px;
+  opacity: 0.9;
 }
 
-.el-menu--horizontal > .el-menu-item {
-  border-bottom: 2px solid transparent;
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.el-menu--horizontal > .el-menu-item.is-active {
-  border-bottom: 2px solid #ffd04b;
+.username {
+  font-size: 14px;
+}
+
+.username i {
+  margin-right: 5px;
+}
+
+/* 确保 router-view 占据剩余空间 */
+.router-view-container {
+  flex: 1;
+  overflow: auto;
 }
 </style>
