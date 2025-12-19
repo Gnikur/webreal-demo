@@ -22,11 +22,11 @@
     }
   ],
   "env": {
-    "VUE_APP_API_URL": "@api_url"
+    "VUE_APP_API_URL": "https://webreal-demo.onrender.com"
   },
   "build": {
     "env": {
-      "VUE_APP_API_URL": "@api_url"
+      "VUE_APP_API_URL": "https://webreal-demo.onrender.com"
     }
   }
 }
